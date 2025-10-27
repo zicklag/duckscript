@@ -11,9 +11,8 @@ use crate::types::command::Commands;
 use crate::types::env::Env;
 use crate::types::instruction::Instruction;
 use std::any::Any;
-use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
-use std::rc::Rc;
+use std::sync::{Arc, RwLock};
 
 /// enum defining what values can be stored in the state map
 #[derive(Debug, Clone)]
@@ -43,7 +42,7 @@ pub enum StateValue {
     /// sub state value
     SubState(HashMap<String, StateValue>),
     /// any value
-    Any(Rc<RefCell<dyn Any>>),
+    Any(Arc<RwLock<dyn Any>>),
 }
 
 /// The context structure

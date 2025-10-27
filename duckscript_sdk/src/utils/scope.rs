@@ -1,8 +1,7 @@
 use crate::utils::state::{ensure_list, mutate_list};
 use duckscript::types::runtime::StateValue;
-use std::cell::RefCell;
 use std::collections::HashMap;
-use std::rc::Rc;
+use std::sync::{Arc, RwLock};
 
 static SCOPE_STACK_STATE_KEY: &str = "scope_stack";
 
@@ -14,7 +13,7 @@ pub(crate) fn push(
     ensure_list(SCOPE_STACK_STATE_KEY, state);
 
     match mutate_list(SCOPE_STACK_STATE_KEY.to_string(), state, |list| {
-        list.push(StateValue::Any(Rc::new(RefCell::new(variables.clone()))));
+        list.push(StateValue::Any(Arc::new(RwLock::new(variables.clone()))));
         Ok(None)
     }) {
         Ok(_) => {
@@ -49,7 +48,7 @@ pub(crate) fn pop(
         |list| match list.pop() {
             Some(state_value) => match state_value {
                 StateValue::Any(rc_value) => {
-                    let value_any = rc_value.borrow();
+                    let value_any = rc_value.write().unwrap();
 
                     match value_any.downcast_ref::<HashMap<String, String>>() {
                         Some(old_variables) => {
