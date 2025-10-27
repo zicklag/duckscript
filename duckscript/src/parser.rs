@@ -7,23 +7,14 @@
 #[path = "./parser_test.rs"]
 mod parser_test;
 
-use crate::preprocessor;
 use crate::types::error::ScriptError;
 use crate::types::instruction::{
     Instruction, InstructionMetaInfo, InstructionType, PreProcessInstruction, ScriptInstruction,
 };
-use fsio::file::read_text_file;
 
 static COMMENT_PREFIX_STR: &str = "#";
 static PRE_PROCESS_PREFIX: char = '!';
 static LABEL_PREFIX: char = ':';
-
-/// parses the file and returns a vector of instructions
-pub fn parse_file(file: &str) -> Result<Vec<Instruction>, ScriptError> {
-    let text = read_text_file(file)
-        .map_err(|error| ScriptError::ErrorReadingFile(file.to_string(), Some(error)))?;
-    parse_text_with_source_file(&text, file)
-}
 
 /// parses the provided script text and returns a vector of instructions
 pub fn parse_text(text: &str) -> Result<Vec<Instruction>, ScriptError> {
@@ -57,12 +48,12 @@ fn parse_lines(
             Ok(instruction) => {
                 instructions.push(instruction.clone());
 
-                if let InstructionType::PreProcess(_) = instruction.instruction_type {
-                    match preprocessor::run(&instruction) {
-                        Ok(mut added_instructions) => instructions.append(&mut added_instructions),
-                        Err(error) => return Err(error),
-                    }
-                }
+                // if let InstructionType::PreProcess(_) = instruction.instruction_type {
+                //     match preprocessor::run(&instruction) {
+                //         Ok(mut added_instructions) => instructions.append(&mut added_instructions),
+                //         Err(error) => return Err(error),
+                //     }
+                // }
             }
             Err(error) => return Err(error),
         };
@@ -90,11 +81,15 @@ fn parse_line(line_text: &str, meta_info: InstructionMetaInfo) -> Result<Instruc
     }
 }
 
+#[allow(unused)]
 fn parse_pre_process_line(
     line_text: &Vec<char>,
     meta_info: InstructionMetaInfo,
     start_index: usize,
 ) -> Result<Instruction, ScriptError> {
+    // For now we have disabled pre-procesing completely.
+    return Err(ScriptError::PreProcessNoCommandFound(meta_info));
+
     if line_text.is_empty() {
         Err(ScriptError::PreProcessNoCommandFound(meta_info))
     } else {

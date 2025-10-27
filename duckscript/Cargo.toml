@@ -21,6 +21,3 @@ include = [
   "/LICENSE",
   "/README.md",
 ]
-
-[dependencies]
-fsio = "^0.4"

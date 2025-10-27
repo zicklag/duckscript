@@ -4,7 +4,6 @@
 //!
 
 use crate::types::instruction::InstructionMetaInfo;
-use fsio::error::FsIOError;
 use std::error::Error;
 use std::fmt;
 use std::fmt::Display;
@@ -34,8 +33,6 @@ fn format_error_message(
 /// Holds the error information
 pub enum ScriptError {
     /// Error Info Type
-    ErrorReadingFile(String, Option<FsIOError>),
-    /// Error Info Type
     Initialization(String),
     /// Error Info Type
     Runtime(String, Option<InstructionMetaInfo>),
@@ -55,21 +52,14 @@ pub enum ScriptError {
     InvalidQuotesLocation(InstructionMetaInfo),
     /// Error Info Type
     EmptyLabel(InstructionMetaInfo),
-    /// Error Info Type
-    UnknownPreProcessorCommand(InstructionMetaInfo),
+    /// IO Error
+    IoError(std::io::Error),
 }
 
 impl Display for ScriptError {
     /// Formats the script error using the given formatter.
     fn fmt(&self, formatter: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         match self {
-            Self::ErrorReadingFile(ref file, ref cause) => {
-                writeln!(formatter, "Error reading file: {}", file)?;
-                match cause {
-                    Some(cause_err) => cause_err.fmt(formatter),
-                    None => Ok(()),
-                }
-            }
             Self::Initialization(ref message) => write!(formatter, "{}", message),
             Self::Runtime(ref message, ref meta_info) => {
                 let empty_meta_data = InstructionMetaInfo::new();
@@ -102,31 +92,14 @@ impl Display for ScriptError {
             Self::EmptyLabel(ref meta_info) => {
                 format_error_message(formatter, &meta_info, "empty label found")
             }
-            Self::UnknownPreProcessorCommand(ref meta_info) => {
-                format_error_message(formatter, &meta_info, "unknown preprocessor command")
-            }
+            Self::IoError(ref error) => write!(formatter, "IO Error: {error}"),
         }
+    }
+}
+impl From<std::io::Error> for ScriptError {
+    fn from(value: std::io::Error) -> Self {
+        ScriptError::IoError(value)
     }
 }
 
-impl Error for ScriptError {
-    fn source(&self) -> Option<&(dyn Error + 'static)> {
-        match self {
-            Self::ErrorReadingFile(_, error) => error.as_ref().map(|fsio_error| {
-                let std_error: &dyn Error = fsio_error;
-                std_error
-            }),
-            Self::Initialization(_) => None,
-            Self::Runtime(_, _) => None,
-            Self::PreProcessNoCommandFound(_) => None,
-            Self::ControlWithoutValidValue(_) => None,
-            Self::InvalidControlLocation(_) => None,
-            Self::MissingEndQuotes(_) => None,
-            Self::MissingOutputVariableName(_) => None,
-            Self::InvalidEqualsLocation(_) => None,
-            Self::InvalidQuotesLocation(_) => None,
-            Self::EmptyLabel(_) => None,
-            Self::UnknownPreProcessorCommand(_) => None,
-        }
-    }
-}
+impl Error for ScriptError {}

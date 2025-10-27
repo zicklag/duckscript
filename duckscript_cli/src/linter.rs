@@ -3,7 +3,8 @@ use duckscript::types::error::ScriptError;
 use duckscript::types::instruction::{Instruction, InstructionType, ScriptInstruction};
 
 pub(crate) fn lint_file(file: &str) -> Result<(), ScriptError> {
-    match parser::parse_file(file) {
+    let text = std::fs::read_to_string(file)?;
+    match parser::parse_text(&text) {
         Ok(instructions) => {
             println!("File: {} parsed correctly.", file);
 

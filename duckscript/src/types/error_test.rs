@@ -1,12 +1,6 @@
 use super::*;
 
 #[test]
-fn display_error_reading_file() {
-    let error = ScriptError::ErrorReadingFile("test".to_string(), None);
-    println!("{}", error);
-}
-
-#[test]
 fn display_initialization() {
     let error = ScriptError::Initialization("test".to_string());
     println!("{}", error);
@@ -69,11 +63,5 @@ fn display_invalid_quotes_location() {
 #[test]
 fn display_empty_label() {
     let error = ScriptError::EmptyLabel(InstructionMetaInfo::new());
-    println!("{}", error);
-}
-
-#[test]
-fn display_unknown_pre_processor_command() {
-    let error = ScriptError::UnknownPreProcessorCommand(InstructionMetaInfo::new());
     println!("{}", error);
 }

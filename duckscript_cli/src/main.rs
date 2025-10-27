@@ -100,7 +100,8 @@ fn run_script(value: &str, is_file: bool) -> Result<(), ScriptError> {
     let context = create_context()?;
 
     if is_file {
-        runner::run_script_file(value, context, None)?;
+        let text = std::fs::read_to_string(value)?;
+        runner::run_script(&text, context, None)?;
     } else {
         runner::run_script(value, context, None)?;
     }

@@ -870,15 +870,8 @@ fn parse_lines_all() {
 }
 
 #[test]
-fn parse_file_not_found() {
-    let result = parse_file("./src/test/scripts/not_found.ds");
-
-    assert!(result.is_err());
-}
-
-#[test]
 fn parse_file_simple() {
-    let result = parse_file("./src/test/scripts/simple.ds");
+    let result = parse_text(include_str!("./test/scripts/simple.ds"));
 
     assert!(result.is_ok());
 
@@ -919,7 +912,7 @@ fn parse_file_simple() {
 
 #[test]
 fn parse_file_single_extend() {
-    let result = parse_file("./src/test/scripts/include_file.ds");
+    let result = parse_text(include_str!("./test/scripts/include_file.ds"));
 
     assert!(result.is_ok());
 

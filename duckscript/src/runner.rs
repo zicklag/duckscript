@@ -36,18 +36,6 @@ pub fn run_script(text: &str, context: Context, env: Option<Env>) -> Result<Cont
     }
 }
 
-/// Executes the provided script file with the given context
-pub fn run_script_file(
-    file: &str,
-    context: Context,
-    env: Option<Env>,
-) -> Result<Context, ScriptError> {
-    match parser::parse_file(file) {
-        Ok(instructions) => run(instructions, context, env),
-        Err(error) => Err(error),
-    }
-}
-
 /// Provides the REPL entry point
 pub fn repl(mut context: Context) -> Result<Context, ScriptError> {
     let mut text = String::new();

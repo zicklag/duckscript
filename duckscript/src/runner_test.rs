@@ -40,15 +40,15 @@ fn run_script_runtime_error() {
     let mut context = Context::new();
     let cmd_result = context.commands.set(Box::new(CrashCommand {}));
     assert!(cmd_result.is_ok());
-    let result = run_script_file("./src/test/scripts/crash.ds", context, None);
+    let result = run_script(include_str!("./test/scripts/crash.ds"), context, None);
 
     assert!(result.is_err());
 }
 
 #[test]
 fn run_script_file_valid() {
-    let result = run_script_file(
-        "./src/test/scripts/print_preprocessor.ds",
+    let result = run_script(
+        include_str!("./test/scripts/print_preprocessor.ds"),
         Context::new(),
         None,
     );

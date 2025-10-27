@@ -52,7 +52,11 @@ impl Command for CommandImpl {
                 "".to_string()
             };
 
-            match parser::parse_file(&context.arguments[0]) {
+            let script_text = match std::fs::read_to_string(&context.arguments[0]) {
+                Ok(s) => s,
+                Err(e) => return CommandResult::Error(format!("Error reading file: {e}")),
+            };
+            match parser::parse_text(&script_text) {
                 Ok(instructions) => match context.commands.get("function") {
                     Some(function_command) => {
                         let mut command_names = function_command.aliases();

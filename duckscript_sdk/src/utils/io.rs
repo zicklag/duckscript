@@ -8,14 +8,14 @@ mod io_test;
 pub(crate) fn read_text_file(file: &str) -> Result<String, ScriptError> {
     match fsio::file::read_text_file(file) {
         Ok(content) => Ok(content),
-        Err(error) => Err(ScriptError::ErrorReadingFile(file.to_string(), Some(error))),
+        Err(error) => Err(ScriptError::Runtime(format!("Error reading file ( {file} ): {error}"), None)),
     }
 }
 
 pub(crate) fn read_raw_file(file: &str) -> Result<Vec<u8>, ScriptError> {
     match read_file(file) {
         Ok(content) => Ok(content),
-        Err(error) => Err(ScriptError::ErrorReadingFile(file.to_string(), Some(error))),
+        Err(error) => Err(ScriptError::Runtime(format!("Error reading file ( {file} ): {error}"), None)),
     }
 }
 

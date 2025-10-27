@@ -360,9 +360,6 @@ dependencies = [
 [[package]]
 name = "duckscript"
 version = "0.10.0"
-dependencies = [
- "fsio",
-]
 
 [[package]]
 name = "duckscript_cli"
